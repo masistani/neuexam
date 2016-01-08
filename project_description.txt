@@ -1,0 +1,12 @@
+Thank you for your time and reading my code. Please find following as additional information in regarding to this exam.
+
+1. I choose spring boot because this allow me to develop fast and based on spring activity in github, seems this project is very active which could help in case something is not working. Other reason is spring boot by default include container which is Apache Tomcat 8 (8.0.30) which make this application portable and ready to use. However, in case that require to deploy the application to container, still we can make war file from project as well.
+
+2. All testcases are using junit and spring boot test framework. Since this is included in maven build, this would allow us to prevent any issue in future. If test case fails build would break and prevent deploy broken application to production. However, in case of emergency we can always disable testing from maven build.
+
+3. However, all test cases is written in junit, making a script (even curl) and schedule that through OS would help to maintain the web service. This script could make a call to api and just make sure api is alive and can return list of valid categories and if web service is not responding send email for maintenance team. This would help for monitoring the web service. Also, maintenance process such as looking through the log file and see number of active session would assist in maintenance. To do so, there are several tools from web server manager (tomcat manager), up to other monitoring tools would help as well.
+
+4. To load balance web service, we can have different solutions depend on request. If request is distributed on different end points, then we need more resources, which require multiple instance of web service. This would work, however, synchronizing the list of valid categories between instances is require. If most of request are map to one end point, we can define multiple end point to do similar task. 
+
+Thank you,
+Ali

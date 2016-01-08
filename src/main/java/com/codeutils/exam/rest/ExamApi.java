@@ -18,7 +18,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Rest API which will receive 
+ * Rest API which will process list of category, sub-category pair. The result
+ * is a list which contain unique items in valid category and list if categories
+ * and number of item in each category. Also, this API allow user to add and
+ * remove valid categories and receive list of valid categories
  * 
  * @author Mohammad Ali Sistani, masistani@yahoo.com
  */
@@ -121,8 +124,8 @@ public class ExamApi {
 	 * 
 	 * @return false if API is not active, otherwise, true
 	 */
-	@ResponseStatus(value = HttpStatus.OK)
 	@RequestMapping(value = "/isactive", method = RequestMethod.GET)
+	@ResponseStatus(value = HttpStatus.OK)
 	public boolean isApiActive() {
 		return IS_API_ACTIVE;
 	}
