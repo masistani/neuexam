@@ -18,6 +18,7 @@ Note: Please keep in mind that project is include test which would prevent build
 
 Note: This project is using Java 8 which is define in POM as well.
 
+
 # Build
 
 To build project please run following command (unique for all environment).
