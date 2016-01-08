@@ -1,12 +1,12 @@
 package com.codeutils.exam.rest;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,26 +20,109 @@ import org.springframework.web.client.RestTemplate;
 @SpringApplicationConfiguration(classes = RestApiExamApplication.class)
 @WebIntegrationTest({"server.port=10443"})
 public class RestApiExamApplicationTests {
-	private static final String URL = "http://localhost:10443/api/v1/processcountvaliditem";
-	private static final String URL_TST = "http://localhost:10443/api/v1/tst";
+	private static final String BASE_URL = "http://localhost:10443/api/v1";
+	private static final String URL = BASE_URL + "/processcountvaliditem";
+	private static final String URL_LIST_CATEGORY = BASE_URL + "/listcategory";
+	private static final String URL_ADD_CATEGORY = BASE_URL + "/addcategory";
+	private static final String URL_REMOVE_CATEGORY = BASE_URL + "/removecategory";
+	private static final String URL_IS_ACTIVE = BASE_URL + "/isactive";
 	
 	RestTemplate rt = new TestRestTemplate();
 
-//	@Test
-//	public void testSampleData() {
-//		ExamResult response = rt.postForObject(URL, getRequestData(), ExamResult.class);
-//		System.out.println(response.getResultCategoryCount().toString() + response.getResultCategoryCount().toString());
-//		for (CategorySubCategory item:response.getResultCategorySub())
-//			System.out.println("this is value: " + item.getCategory() + ", " + item.getSubCategory());
-//	}
-	
+	/**
+	 * test if the expected response of category, sub-category is correct
+	 * (remove duplicate and only pass valid categories)
+	 */
 	@Test
-	public void testSampleData() {
-		CategorySubCategory[] response = rt.postForObject(URL_TST, getRequestData(), CategorySubCategory[].class);
-		for (CategorySubCategory item:response)
-			System.out.println(item.getCategory());
+	public void testCategorySubcategoryData() {
+		ExamResult response = rt.postForObject(URL, getRequestData(), ExamResult.class);
+		assertTrue(response.getResultCategorySub().equals(getExpectedResponseData()));
 	}
 	
+	/**
+	 * test if the expected response (category count) is correct
+	 */
+	@Test
+	public void testCateoryCount() {
+		ExamResult response = rt.postForObject(URL, getRequestData(), ExamResult.class);
+		assertTrue(response.getResultCategoryCount().equals(getExpectedResponseCount()));
+	}
+	
+	/**
+	 * test if add an item which is not a part of valid category, then we still
+	 * have to receive same result. Randomize category to prevent test case
+	 * which category might be same
+	 */
+	@Test
+	public void testExpectedResult() {
+		addCategory("new_random_category_to_test_" + UUID.randomUUID().toString());
+		testCategorySubcategoryData();
+		testCateoryCount();
+	}
+	
+	/**
+	 * add a new and get the list of categories, if item exists then pass the test otherwise fail
+	 */
+	@Test
+	public void testAddCategory() {
+		String testCategory = "new_sample_category";
+		addCategory(testCategory);
+		String[] response = rt.getForObject(URL_LIST_CATEGORY, String[].class);
+
+		for (String item : response) {
+			if (item.equals(testCategory)) {
+				assertTrue(true);	// if category that we just added exists
+				return;
+			}
+		}
+
+		assertTrue(false);
+	}
+	
+	private void addCategory(String category) {
+		rt.postForLocation(URL_ADD_CATEGORY, new String[]{category});
+	}
+
+	/**
+	 * get list of categories and remove the first category. then retrieve a
+	 * list again and make sure item does not exists
+	 */
+	@Test
+	public void testRemoveCategory() {
+		String[] cagories = rt.getForObject(URL_LIST_CATEGORY, String[].class);
+		if (cagories.length == 0) {
+			assertTrue(false);
+			return;
+		}
+		String firstCategory = cagories[0];
+		// remove first category
+		rt.postForLocation(URL_REMOVE_CATEGORY, new String[]{firstCategory});		
+		String[] response = rt.getForObject(URL_LIST_CATEGORY, String[].class);
+
+		for (String item : response) {
+			if (item.equals(firstCategory)) {
+				assertTrue(false);	// if category that we just removed exists
+				return;
+			}
+		}
+
+		assertTrue(true);
+	}
+	
+	/**
+	 * this is an extra test which check if API is active or not
+	 */
+	@Test
+	public void isServerAliveTest() {
+		Boolean response = rt.getForObject(URL_IS_ACTIVE, Boolean.class);
+		assertTrue(response);
+	}
+	
+	/**
+	 * list of sample data in question
+	 * 
+	 * @return List<CategorySubCategory>
+	 */
 	private List<CategorySubCategory> getRequestData() {
 		List<CategorySubCategory> requestData = new ArrayList<CategorySubCategory>();
 		requestData.add(new CategorySubCategory("PERSON", "Bob Jones"));
@@ -57,6 +140,12 @@ public class RestApiExamApplicationTests {
 		return requestData;
 	}
 	
+	/**
+	 * list of response which is categories and sub-categories has been removed
+	 * from the list
+	 * 
+	 * @return
+	 */
 	private List<CategorySubCategory> getExpectedResponseData() {
 		List<CategorySubCategory> responseData = new ArrayList<CategorySubCategory>();
 		responseData.add(new CategorySubCategory("PERSON", "Bob Jones"));
@@ -72,6 +161,11 @@ public class RestApiExamApplicationTests {
 		return responseData;
 	}
 	
+	/**
+	 * expected number of categories for each valid category
+	 * 
+	 * @return
+	 */
 	private Map<String, Integer> getExpectedResponseCount() {
 		Map<String, Integer> responseData = new HashMap<String, Integer>();
 		responseData.put("PERSON", 3);
