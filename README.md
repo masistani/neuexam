@@ -1,4 +1,4 @@
-Interview Project
+Interview Project (Please see project_description for more detail)
 ==================
 
 # Setup Project
