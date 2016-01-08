@@ -26,6 +26,6 @@ To build project please run following command (unique for all environment).
 
 To run this project, do the following:
 
-    java -jar restapiexam-0.0.1-SNAPSHOT.jar
+    java -jar ./target/restapiexam-0.0.1-SNAPSHOT.jar
 
 
