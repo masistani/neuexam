@@ -8,5 +8,7 @@ Thank you for your time and reading my code. Please find following as additional
 
 4. To load balance web service, we can have different solutions depend on request. If request is distributed on different end points, then we need more resources, which require multiple instance of web service. This would work, however, synchronizing the list of valid categories between instances is require. If most of request are map to one end point, we can define multiple end point to do similar task. 
 
+5. In regarding to question related to how test, design and document a software, I usually look at resources, deadline and goal of software define a frame for design, test and documentation. First step would be essential of project which is make project up and running. Juint for most essential part of code. Also, add java doc as much as possible. Next step would be what is not essential but we could add to software to improve the quality of software and make software more maintainable. Then improve quality of code. Since first solution is not always best solution, we can always improve code, minimize resource usage, make code more readable and minimize time complexity of code. Again all of this factor is define based on available time and resource.
+
 Thank you,
 Ali
