@@ -16,6 +16,8 @@ mvn eclipse:clean eclipse:eclipse
 
 Note: Please keep in mind that project is include test which would prevent build if test case fails. Please apply change in POM if you wish to run application without running the test cases.
 
+Note: This project is using Java 8 which is define in POM as well.
+
 # Build
 
 To build project please run following command (unique for all environment).
